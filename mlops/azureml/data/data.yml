@@ -1,6 +1,0 @@
-# my_data.yaml
-$schema: https://azuremlschemas.azureedge.net/latest/data.schema.json
-type: uri_file
-name: taxi-data
-description: A sample data asset.
-path: ../../../data/taxi-data.csv
