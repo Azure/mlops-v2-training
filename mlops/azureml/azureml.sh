@@ -8,6 +8,8 @@ az ml data create --file train/data.yml
 az ml environment create --file train/environment.yml
 # Create pipeline job
 az ml job create --file train/pipeline.yml
+# Create pipeline job with automl training job
+az ml job create --file train/pipeline_automl.yml
 
 # DEPLOY
 
