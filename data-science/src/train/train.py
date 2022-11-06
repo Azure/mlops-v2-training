@@ -79,7 +79,7 @@ def main(args):
     '''Read train dataset, train model, save trained model'''
 
     # Read train data
-    train_data = pd.read_parquet(Path(args.train_data))
+    train_data = pd.read_parquet(Path(args.train_data) / "train.parquet" )
 
     # Split the data into input(X) and output(y)
     y_train = train_data[TARGET_COL]
@@ -128,9 +128,12 @@ def main(args):
     plt.ylabel("Predicted value")
     plt.savefig("regression_results.png")
     mlflow.log_artifact("regression_results.png")
+    
+    # Log the model using mlflow
+    mlflow.sklearn.log_model(model, args.model_output)
 
-    # Save the model
-    mlflow.sklearn.save_model(sk_model=model, path=args.model_output)
+    # Save the model using mlflow
+    mlflow.sklearn.save_model(model, args.model_output)
 
 
 if __name__ == "__main__":

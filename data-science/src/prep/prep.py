@@ -3,14 +3,14 @@
 """
 Prepares raw data and provides training, validation and test datasets
 """
-
 import argparse
 
 from pathlib import Path
+import ruamel.yaml as yaml
 import os
+
 import numpy as np
 import pandas as pd
-
 import mlflow
 
 TARGET_COL = "cost"
@@ -52,8 +52,7 @@ def parse_args():
     parser.add_argument("--train_data", type=str, help="Path to train dataset")
     parser.add_argument("--val_data", type=str, help="Path to test dataset")
     parser.add_argument("--test_data", type=str, help="Path to test dataset")
-    
-    parser.add_argument("--enable_monitoring", type=str, help="enable logging to ADX")
+    parser.add_argument("--enable_monitoring", type=str, default="false", help="enable logging to ADX")
     parser.add_argument("--table_name", type=str, default="mlmonitoring", help="Table name in ADX for logging")
     
     args = parser.parse_args()
@@ -101,6 +100,26 @@ def main(args):
     if (args.enable_monitoring.lower == 'true' or args.enable_monitoring == '1' or args.enable_monitoring.lower == 'yes'):
         log_training_data(data, args.table_name)
 
+    # Define mltable for train, val, test data
+    mltable_yaml_str = """\
+    type: mltable
+
+    paths:
+    - pattern: ./*.parquet
+    transformations:
+    - read_parquet:
+        include_path_column: "false"
+    """
+    
+    mltable = yaml.load(mltable_yaml_str, Loader=yaml.RoundTripLoader)
+    
+    # Save MLTable file in data directory
+    with open((Path(args.train_data) / "MLTable"), 'w') as outfile:
+        yaml.dump(mltable, outfile, Dumper=yaml.RoundTripDumper, indent=4)
+    with open((Path(args.val_data) / "MLTable"), 'w') as outfile:
+        yaml.dump(mltable, outfile, Dumper=yaml.RoundTripDumper, indent=4)
+    with open((Path(args.test_data) / "MLTable"), 'w') as outfile:
+        yaml.dump(mltable, outfile, Dumper=yaml.RoundTripDumper, indent=4)
 
 if __name__ == "__main__":
 
@@ -116,7 +135,6 @@ if __name__ == "__main__":
         f"Train dataset output path: {args.train_data}",
         f"Val dataset output path: {args.val_data}",
         f"Test dataset path: {args.test_data}",
-
     ]
 
     for line in lines:

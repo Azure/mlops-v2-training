@@ -1,5 +1,7 @@
 azureml-mlflow==1.38.0
+azure-ai-ml==1.0.0
 pyarrow==10.0.0
+ruamel.yaml==0.17.21
 scikit-learn==0.24.1
 pandas==1.2.1
 joblib==1.2.0

@@ -37,18 +37,17 @@ def main(args):
     mlflow.log_metric("deploy flag", int(deploy_flag))
     deploy_flag=1
     if deploy_flag==1:
-
         print("Registering ", args.model_name)
 
-        # load model
+        # load model using mlflow
         model =  mlflow.sklearn.load_model(args.model_path) 
 
-        # log model using mlflow
+        # log model to artifact run using mlflow
         mlflow.sklearn.log_model(model, args.model_name)
 
         # register logged model using mlflow
-        run_id = mlflow.active_run().info.run_id
-        model_uri = f'runs:/{run_id}/{args.model_name}'
+        run_id = mlflow.active_run().info.run_id # run id 
+        model_uri = f'runs:/{run_id}/{args.model_name}' # for logged mlflow models
         mlflow_model = mlflow.register_model(model_uri, args.model_name)
         model_version = mlflow_model.version
 

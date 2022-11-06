@@ -68,14 +68,14 @@ def main(args):
     '''Read trained model and test dataset, evaluate model and save result'''
 
     # Load the test data
-    test_data = pd.read_parquet(Path(args.test_data))
+    test_data = pd.read_parquet(Path(args.test_data)/"test.parquet")
 
     # Split the data into inputs and outputs
     y_test = test_data[TARGET_COL]
     X_test = test_data[NUMERIC_COLS + CAT_NOM_COLS + CAT_ORD_COLS]
 
     # Load the model from input port
-    model =  mlflow.sklearn.load_model(args.model_input) 
+    model = mlflow.sklearn.load_model(args.model_input) 
 
     # ---------------- Model Evaluation ---------------- #
     yhat_test, score = model_evaluation(X_test, y_test, model, args.evaluation_output)
