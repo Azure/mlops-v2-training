@@ -61,7 +61,7 @@ jobs:
     target_column_name: "cost"
     training_data:  ${{parent.jobs.prep_data.outputs.train_data}}
     validation_data: ${{parent.jobs.prep_data.outputs.val_data}}
-    testing_data: ${{parent.jobs.prep_data.outputs.test_data}}
+    test_data: ${{parent.jobs.prep_data.outputs.test_data}}
     featurization:
       mode: "auto"
     training:
