@@ -16,33 +16,19 @@ import mlflow
 TARGET_COL = "cost"
 
 NUMERIC_COLS = [
-    "distance",
-    "dropoff_latitude",
-    "dropoff_longitude",
-    "passengers",
-    "pickup_latitude",
-    "pickup_longitude",
-    "pickup_weekday",
-    "pickup_month",
-    "pickup_monthday",
-    "pickup_hour",
-    "pickup_minute",
-    "pickup_second",
-    "dropoff_weekday",
-    "dropoff_month",
-    "dropoff_monthday",
-    "dropoff_hour",
-    "dropoff_minute",
-    "dropoff_second",
+    "distance", "dropoff_latitude", "dropoff_longitude", "passengers", "pickup_latitude",
+    "pickup_longitude", "pickup_weekday", "pickup_month", "pickup_monthday", "pickup_hour",
+    "pickup_minute", "pickup_second", "dropoff_weekday", "dropoff_month", "dropoff_monthday",
+    "dropoff_hour", "dropoff_minute", "dropoff_second"
 ]
 
 CAT_NOM_COLS = [
-    "store_forward",
-    "vendor",
+    "store_forward", "vendor"
 ]
 
 CAT_ORD_COLS = [
 ]
+
 
 def parse_args():
     '''Parse input arguments'''
