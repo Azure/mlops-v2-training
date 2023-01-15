@@ -1,0 +1,89 @@
+$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
+type: pipeline
+experiment_name: taxi-training-pipeline
+description: Training Pipeline to train a model that predicts taxi fare price
+
+# <inputs_and_outputs>
+inputs:
+  raw_data:
+    type: uri_file
+    path: azureml:taxi-data@latest
+  enable_monitoring: "false"
+  table_name: 'taximonitoring'
+
+outputs: 
+  train_data:
+  val_data:
+  test_data:
+  trained_model:
+  evaluation_output:
+  model_info_output_path:
+# </inputs_and_outputs>
+
+# <jobs>
+settings:
+  default_datastore: azureml:workspaceblobstore
+  default_compute: azureml:cpu-cluster
+  continue_on_step_failure: false
+
+jobs:
+  prep_data:
+    name: prep_data
+    display_name: prep-data
+    code: ../../../components/prep
+    command: >-
+      python prep.py 
+      --raw_data ${{inputs.raw_data}} 
+      --train_data ${{outputs.train_data}}
+      --val_data ${{outputs.val_data}}
+      --test_data ${{outputs.test_data}}
+      --enable_monitoring ${{inputs.enable_monitoring}}
+      --table_name ${{inputs.table_name}}
+    environment: azureml:taxi-train-env@latest
+    inputs:
+      raw_data: ${{parent.inputs.raw_data}}
+      enable_monitoring: ${{parent.inputs.enable_monitoring}}
+      table_name: ${{parent.inputs.table_name}}
+    outputs:
+      train_data: ${{parent.outputs.train_data}}
+      val_data: ${{parent.outputs.val_data}}
+      test_data: ${{parent.outputs.test_data}}
+
+  train_model:
+    type: automl
+    name: train_model
+    display_name: train-model
+    task: regression
+    primary_metric: r2_score
+    limits:
+      max_trials: 6
+      max_concurrent_trials: 2
+    target_column_name: "cost"
+    training_data:  ${{parent.jobs.prep_data.outputs.train_data}}
+    validation_data: ${{parent.jobs.prep_data.outputs.val_data}}
+    test_data: ${{parent.jobs.prep_data.outputs.test_data}}
+    featurization:
+      mode: "auto"
+    training:
+      enable_stack_ensemble: false
+      enable_vote_ensemble: false
+    outputs:
+       best_model:
+          type: mlflow_model
+
+  register_model:
+    name: register_model
+    display_name: register-model  
+    code: ../../../components/register
+    command: >-
+      python register_automl.py 
+      --model_name ${{inputs.model_name}} 
+      --model_path ${{inputs.model_path}} 
+      --model_info_output_path ${{outputs.model_info_output_path}}
+    environment: azureml:taxi-train-env@latest
+    inputs:
+      model_name: "taxi-model-automl"
+      model_path: ${{parent.jobs.train_model.outputs.best_model}}
+    outputs:
+      model_info_output_path: ${{parent.outputs.model_info_output_path}}
+# </jobs>

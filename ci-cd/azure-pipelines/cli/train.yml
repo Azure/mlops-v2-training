@@ -1,0 +1,30 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.8'
+- script: pip install -r ci-cd/azure-pipelines/dev-requirements.txt
+  displayName: 'pip install notebook reqs'
+- task: Bash@3
+  inputs:
+    filePath: 'ci-cd/azure-pipelines/setup-sdk.sh'
+  displayName: 'set up sdk'
+
+- task: Bash@3
+  inputs:
+    filePath: 'ci-cd/azure-pipelines/setup-cli.sh'
+  displayName: 'set up CLI'
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'azureml-mldemo'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      train.sh
+    workingDirectory: 'ml-pipelines/cli'
