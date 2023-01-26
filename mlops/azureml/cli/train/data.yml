@@ -8,4 +8,4 @@ $schema: https://azuremlschemas.azureedge.net/latest/data.schema.json
 type: uri_file
 name: taxi-data
 description: taxi dataset
-path: ../../../data/taxi-data.csv
+path: ../../../../data/taxi-data.csv
