@@ -1,6 +1,6 @@
 azureml-mlflow==1.38.0
 azure-ai-ml==1.0.0
-pyarrow==10.0.0
+pyarrow==14.0.1
 ruamel.yaml==0.17.21
 scikit-learn==0.24.1
 pandas==1.2.1
